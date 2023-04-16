@@ -8,12 +8,14 @@ public class controller : MonoBehaviour
 {
     private int dashFrames = 60;
     private bool pressingLeft = false, pressingRight = false, pressingUp = false, pressingDown = false, movementDisabled = false;
-    private float moveSpeed, walkSpeed = .1f, dashSpeed = 0.75f;
+    private float moveSpeed, walkSpeed = 5f, dashSpeed = 25f;
+    private Rigidbody2D body;
 
     // Start is called before the first frame update
     void Start()
     {
         moveSpeed = walkSpeed;
+        body = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -27,17 +29,17 @@ public class controller : MonoBehaviour
             pressingDown = Input.GetKey(KeyCode.S);
         }
         if (Input.GetKeyDown(KeyCode.Space))
-            StartCoroutine(DisableMovementInput(dashFrames));
+            StartCoroutine(Dash(dashFrames));
     }
 
     private void FixedUpdate()
     {
         int xDirection = Convert.ToInt32(pressingLeft) * -1 + Convert.ToInt32(pressingRight);
         int yDirection = Convert.ToInt32(pressingUp) + Convert.ToInt32(pressingDown) * -1;
-        transform.Translate(new Vector3(xDirection * moveSpeed, yDirection * moveSpeed, 0));
+        body.velocity = new Vector2(xDirection * moveSpeed, yDirection * moveSpeed);
     }
 
-    private IEnumerator DisableMovementInput(int duration)
+    private IEnumerator Dash(int duration)
     {
         movementDisabled = true;
         moveSpeed = dashSpeed;
