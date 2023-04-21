@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private int dashFrames = 60;
+    private int dashFrames = 60, iFrames = 750;
     private bool pressingLeft = false, pressingRight = false, pressingUp = false, pressingDown = false, movementDisabled = false;
     private float moveSpeed, walkSpeed = 5f, dashSpeed = 25f;
     private Rigidbody2D body;
@@ -39,6 +39,12 @@ public class Player : MonoBehaviour
         body.velocity = new Vector2(xDirection * moveSpeed, yDirection * moveSpeed);
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+            StartCoroutine(GoInvulnerable(iFrames, collision.gameObject.layer));
+    }
+
     private IEnumerator Dash(int duration)
     {
         movementDisabled = true;
@@ -47,5 +53,15 @@ public class Player : MonoBehaviour
             yield return null;
         movementDisabled = false;
         moveSpeed = walkSpeed;
+    }
+
+    private IEnumerator GoInvulnerable(int duration, int enemyLayer)
+    {
+        Physics2D.IgnoreLayerCollision(gameObject.layer, enemyLayer, true);
+        GetComponent<SpriteRenderer>().color = Color.cyan;
+        for (int i = 0; i < duration; i++)
+            yield return null;
+        Physics2D.IgnoreLayerCollision(gameObject.layer, enemyLayer, false);
+        GetComponent<SpriteRenderer>().color = Color.yellow;
     }
 }
