@@ -23,8 +23,12 @@ public class Enemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        int xDirection = System.Math.Sign(playerBody.position.x - body.position.x);
-        int yDirection = System.Math.Sign(playerBody.position.y - body.position.y);
+        int xDirection = 0;
+        int yDirection = 0;
+        if(Mathf.Abs(playerBody.position.x - body.position.x) > 0.1)
+            xDirection = System.Math.Sign(playerBody.position.x - body.position.x);
+        if(Mathf.Abs(playerBody.position.y - body.position.y) > 0.1)
+            yDirection = System.Math.Sign(playerBody.position.y - body.position.y);
         body.velocity = new Vector2(xDirection * moveSpeed, yDirection * moveSpeed);
     }
 }

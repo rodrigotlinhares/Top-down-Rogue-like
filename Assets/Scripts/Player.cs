@@ -70,10 +70,11 @@ public class Player : MonoBehaviour
         GetComponent<SpriteRenderer>().color = Color.yellow;
     }
 
-    private void Shoot(Vector2 direction)
+    private void Shoot(Vector2 target)
     {
-        direction.Normalize();
+        target = target - body.position;
+        target.Normalize();
         Rigidbody2D clone = Instantiate(projectile, body.transform.position, Quaternion.identity);
-        clone.velocity = direction * projectileSpeed;
+        clone.velocity = target * projectileSpeed;
     }
 }
