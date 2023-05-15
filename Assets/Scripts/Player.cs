@@ -6,11 +6,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public Rigidbody2D slash;
     public Rigidbody2D projectile;
 
-    private int dashFrames = 60, iFrames = 750;
+    private int dashFrames = 60, iFrames = 750, slashDuration = 60;
     private bool pressingLeft = false, pressingRight = false, pressingUp = false, pressingDown = false, movementDisabled = false;
-    private float moveSpeed, walkSpeed = 5f, dashSpeed = 25f, projectileSpeed = 10f;
+    private float moveSpeed, walkSpeed = 5f, dashSpeed = 25f, slashSpeed = 3f, projectileSpeed = 10f;
     private Rigidbody2D body;
 
     // Start is called before the first frame update
@@ -33,6 +34,8 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             StartCoroutine(Dash(dashFrames));
         if (Input.GetKeyDown(KeyCode.Mouse0))
+            Slash(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        if (Input.GetKeyDown(KeyCode.Mouse1))
             Shoot(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             
     }
@@ -68,6 +71,23 @@ public class Player : MonoBehaviour
             yield return null;
         Physics2D.IgnoreLayerCollision(gameObject.layer, enemyLayer, false);
         GetComponent<SpriteRenderer>().color = Color.yellow;
+    }
+
+    private IEnumerator SlashTimer (int duration, GameObject slash)
+    {
+        for (int i = 0; i < duration; i++)
+            yield return null;
+        Destroy(slash);
+    }
+
+    private void Slash(Vector2 target)
+    {
+        target = target - body.position;
+        target.Normalize();
+        Vector2 position = new Vector2(body.transform.position.x, body.transform.position.y) + target;
+        Rigidbody2D clone = Instantiate(slash, position, Quaternion.FromToRotation(new Vector2(1, 0), target));
+        clone.velocity = target * slashSpeed;
+        StartCoroutine(SlashTimer(slashDuration, clone.gameObject));
     }
 
     private void Shoot(Vector2 target)
